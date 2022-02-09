@@ -352,7 +352,7 @@ public class RoadEditorManager_Task : RoadEditorManager_Base
     {
         // Instantiate section object
         Vector3 midPoint = (from + to) / 2;
-        Quaternion rotation = Quaternion.LookRotation(to - from, Vector3.up);
+        Quaternion rotation = Quaternion.LookRotation((to - from).normalized, Vector3.up);
         GameObject section = Instantiate(prefab, midPoint, rotation, transform);
         float distance = Vector3.Distance(from, to); // We don't use cached distance since this function can be called from CreateJunctionsFromLoaded()
         
@@ -409,8 +409,12 @@ public class RoadEditorManager_Task : RoadEditorManager_Base
         
         // // Clamp line if bigger than MaxRoadDistance
         float dist = (distance > MaxRoadDistance)? MaxRoadDistance : distance;
-        
-        Quaternion rotation = Quaternion.LookRotation(position - lastPosition, Vector3.up);
+        Vector3 lookVector = position - lastPosition;
+
+        if(lookVector == Vector3.zero)
+            return;
+            
+        Quaternion rotation = Quaternion.LookRotation(lookVector, Vector3.up);
 
         constructionObj.transform.position = lastPosition;
         constructionObj.transform.rotation = rotation;
